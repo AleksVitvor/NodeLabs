@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Главная</title>
+    <meta charset="utf-8"/>
+    <script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script>
+        alert("Hello World!");
+        $( document ).ready(function(){
+            alert("Hello World!");
+            $.get(
+                "api/name",
+                function(data)
+                {
+                    document.getElementById("name").innerHTML = data;
+                }
+            );
+        });
+    </script>   
+</head>
+<body>
+    <h3 id="name"></h3>
+</body>
+<html>
