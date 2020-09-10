@@ -10,7 +10,7 @@ const html=`
         </head>
         
         <body>
-            <h1>Hello World!</h1>
+            <h3>Hello World!</h3>
         </body>
     </html>
     `;
@@ -22,6 +22,10 @@ http.createServer((req, res)=>
         case '/':
             res.writeHead(200, {'Content-type':'text/html'});
             res.end(html);
+            break;
+        case '/hello':
+            res.writeHead(200, {'Content-type':'text/html'});
+            res.end(`<h1>Hello World!</h1>`);
             break;
         default:
             res.writeHead(400, {'Content-type':'text/plain'});
