@@ -7,10 +7,25 @@ const {
   } = require('perf_hooks');
 var status='norm';
 
+// var time=performance.now();
+
 let factorial=(m)=>
 {
     var n = parseInt(m);
     return (n < 0 || m != n) ? NaN : (n == 0 ? 1 : n * factorial(n - 1));
+}
+function Fact(n, cb) {
+    this.fn=n;
+    this.ffact=factorial;
+    this.fcb=cb;
+    this.calc=()=>{process.nextTick(()=>{this.fcb(null, this.ffact(this.fn));});}
+}
+function Fact1(n, cb)
+{
+    this.fn=n;
+    this.ffact=factorial;
+    this.fcb=cb;
+    this.calc=()=>{setImmediate(()=>{this.fcb(null, this.ffact(this.fn));});}
 }
 
 process.stdin.setEncoding('utf-8');
@@ -90,12 +105,97 @@ http.createServer(function(request, response){
                         fs.createReadStream("factorial.html").pipe(response);
                     }
                   });
-                break;
             }
             else
             {
                 response.writeHead(405, {'Content-type':'text/plain'});
                 response.end("Invalid http method");
             }
+            break;
+        case 'factorial-with-tick':
+            if(request.method=='GET')
+            {
+                fs.access("factorial4.html", err => {
+                    // если произошла ошибка - отправляем статусный код 404
+                    if(err){
+                        response.statusCode = 404;
+                        response.end("Resourse not found!");
+                    }
+                    else
+                    {
+                        fs.createReadStream("factorial4.html").pipe(response);
+                    }
+                });
+            }
+            else
+            {
+                response.writeHead(405, {'Content-type':'text/plain'});
+                response.end("Invalid http method");
+            }
+            break;
+        case 'factorial-with-setImmediate':
+            if(request.method=='GET')
+            {
+                fs.access("factorial5.html", err => {
+                    // если произошла ошибка - отправляем статусный код 404
+                    if(err){
+                        response.statusCode = 404;
+                        response.end("Resourse not found!");
+                    }
+                    else
+                    {
+                        fs.createReadStream("factorial5.html").pipe(response);
+                    }
+                });
+            }
+            else
+            {
+                response.writeHead(405, {'Content-type':'text/plain'});
+                response.end("Invalid http method");
+            }
+            break;
+        case 'factSetImmediate':
+            if(request.method=='GET')
+            {
+                k=parseInt(urlRequest.query.k);
+                var res=0;
+                var time=performance.now();
+                var fact=new Fact1(k, (err, result)=>
+                {
+                    time=performance.now()-time;
+                    time=parseInt(time*1000);
+                    response.writeHead(200, {'Content-type':'application/json'});
+                    response.end(JSON.stringify({t:time, k:k, fact:result}));
+                });
+                fact.calc();                
+            }
+            else
+            {
+                response.writeHead(405, {'Content-type':'text/plain'});
+                response.end("Invalid http method");
+            }
+            break;
+        case 'factTick':
+            if(request.method=='GET')
+            {
+                k=parseInt(urlRequest.query.k);
+                var res=0;
+                var time=performance.now();
+                var fact=new Fact(k, (err, result)=>
+                {
+                    time=performance.now()-time;
+                    time=parseInt(time*1000);
+                    response.writeHead(200, {'Content-type':'application/json'});
+                    response.end(JSON.stringify({t:time, k:k, fact:result}));
+                });
+                fact.calc();                
+            }
+            else
+            {
+                response.writeHead(405, {'Content-type':'text/plain'});
+                response.end("Invalid http method");
+            }
+            break;
+            
     }
 }).listen(3000, function(){console.log("Server started on 3000 port")});
