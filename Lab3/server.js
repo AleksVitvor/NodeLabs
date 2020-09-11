@@ -75,6 +75,7 @@ http.createServer(function(request, response){
         case 'status':
             response.statusCode=200;
             response.end(status);
+            break;
         case 'fact':
             if(request.method=='GET')
             {
@@ -195,7 +196,6 @@ http.createServer(function(request, response){
                 response.writeHead(405, {'Content-type':'text/plain'});
                 response.end("Invalid http method");
             }
-            break;
-            
+            break;            
     }
 }).listen(3000, function(){console.log("Server started on 3000 port")});
