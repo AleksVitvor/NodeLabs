@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document</title>
+</head>
+<body>
+<label>Список</label></br>
+<div id="db"></div></br>
+<button onclick="Get()">Reload</button></br></br>
+<label>Добавление</label></br>
+<input id="id" type="number" placeholder="Введите идентификатор"/></br>
+<input id="name" type="text" placeholder="Введите Имя"/></br>
+<button onclick="Post()">Add</button></br></br>
+<label>Изменение</label></br>
+<input id="id2" type="number" placeholder="Введите идентификатор"/></br>
+<input id="name2" type="text" placeholder="Введите Имя"/></br>
+<button onclick="Put()">Change</button></br></br>
+<label>Удаление</label></br>
+<input id="id3" type="number" placeholder="Введите идентификатор"/></br>
+<button onclick="Delete()">Delete</button></br></br>
+</body>
+<script>
+var db = document.getElementById("db");
+async function Get() {
+const f = await fetch("http://localhost:3000/api/db", {
+method: 'GET'
+});
+const result = await f.text();
+db.innerHTML = result;
+}
+
+let ID = document.getElementById("id");
+let name = document.getElementById("name");
+async function Post() {
+const f = await fetch("http://localhost:3000/api/db", {
+method: 'POST',
+body: JSON.stringify({id: ID.value, name: name.value})
+});
+const result = await f.text();
+db.innerHTML = result;
+}
+
+let ID2 = document.getElementById("id2");
+let name2 = document.getElementById("name2");
+async function Put() {
+const f = await fetch("http://localhost:3000/api/db", {
+method: 'PUT',
+body: JSON.stringify({id: ID2.value, name: name2.value})
+});
+const result = await f.text();
+db.innerHTML = result;
+}
+
+let ID3 = document.getElementById("id3");
+async function Delete() {
+const f = await fetch(`http://localhost:3000/api/db?id=${ID3.value}`, {
+method: 'DELETE'
+});
+const result = await f.text();
+alert(`Удалено: ${result}`);
+}
+</script>
+</html>
