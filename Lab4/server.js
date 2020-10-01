@@ -101,12 +101,12 @@ process.stdin.on('readable', ()=>
             {
                 commitsCounter=0;
                 requestsCounter=0;
-                startTime=Date.now();
+                startTime=new Date().toLocaleTimeString();
                 flag=true;
                 timer2=setTimeout((p1)=>
                 {
                     flag=false;
-                    let endTime=Date.now();
+                    let endTime=new Date().toLocaleTimeString();
                     db.saveStat({startTime, endTime, requestsCounter, commitsCounter});
                     commitsCounter=0;
                     requestsCounter=0;
