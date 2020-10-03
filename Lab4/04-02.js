@@ -7,6 +7,8 @@ var db_data= [
     {id:3, name:'Иванов К.И.', bday:'2001-01-02'}
 ]
 
+var statistics=[];
+
 function DB()
 {
     this.get=()=>{return db_data;};
@@ -18,6 +20,9 @@ function DB()
         db_data.splice(db_data.findIndex(u=>u.id==r),1);
         return data;
     };
+    this.commit=()=>{};
+    this.saveStat=(r)=>{statistics.push(r);};
+    this.loadLastStat=()=>{return statistics[statistics.length-1];};
 }
 
 util.inherits(DB, ee.EventEmitter);
