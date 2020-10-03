@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <label>Отправитель</label>
+        <input type="email" id="sender"/><br/><br/>
+        <label>Получатель</label>
+        <input type="email" id="receiver"/><br/><br/>
+        <label>Сообщение</label>
+        <input type="text" id="message"/><br/><br/>
+        <button onclick="Send()">Отправить с указанного адреса</button><br/><br/>
+        <button onclick="SendOne()">Отправить только сообщение</button><br/><br/>
+    </body>
+    <script>
+        let message=document.getElementById("message");
+        let sender=document.getElementById("sender");
+        let receiver=document.getElementById("receiver");
+        async function Send() {
+            const f=await fetch(`http://localhost:3000/send?message=${message.value}&sender=${sender.value}&receiver=${receiver.value}`, {
+            method: 'GET'
+            });
+        }
+        async function SendOne()
+        {
+            const f=await fetch(`http://localhost:3000/sendone?message=${message.value}`, {
+            method: 'GET'
+            });
+        }
+    </script>
+</html>
