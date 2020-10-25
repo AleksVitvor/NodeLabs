@@ -5,6 +5,34 @@ const qs = require("querystring");
 const parseString=require('xml2js').parseString;
 const xmlBuilder=require('xmlbuilder');
 
+let count = (obj)=>
+{
+    let rc='<result>prase error</result>';
+    try
+    {
+        let xmldoc=xmlBuilder.create("responce").att('request', obj.request.$.id);
+        let sum=0;
+        let str='';
+        for(var i=0;i<obj.request.x.length;i++)
+        {
+            sum+=parseInt(obj.request.x[i].$.value);
+        }
+        for(var i=0;i<obj.request.m.length;i++)
+        {
+            str+=obj.request.m[i].$.value;
+        }
+        xmldoc.ele('sum').att('value', sum)
+                .up()
+                .ele('concat').att('value', str);
+        rc=xmldoc.toString({pretty:true});
+    }
+    catch(e)
+    {
+        console.log(e);
+    }
+    return rc;
+}
+
 let server=http.createServer(function(request, response){
     // получаем путь после слеша
     //const filePath = request.url.substr(1);
@@ -235,7 +263,9 @@ let server=http.createServer(function(request, response){
                         }
                         else
                         {
-                            
+                            response.writeHead(200);
+                            response.write(count(result));
+                            response.end();
                         }
                     })
                 });
