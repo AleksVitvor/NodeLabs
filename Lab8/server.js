@@ -1,6 +1,9 @@
 const http = require("http");
 const fs = require("fs");
 const url=require("url");
+const qs = require("querystring"); 
+const parseString=require('xml2js').parseString;
+const xmlBuilder=require('xmlbuilder');
 
 let server=http.createServer(function(request, response){
     // получаем путь после слеша
@@ -8,6 +11,18 @@ let server=http.createServer(function(request, response){
     const urlRequest=url.parse(request.url, true);
     switch(urlRequest.pathname.split('/')[1])
     {
+        case '':
+            fs.access("index.html", err => {
+                // если произошла ошибка - отправляем статусный код 404
+                if(err){
+                    response.statusCode = 404;
+                    response.end("Resourse not found!");
+                }
+                else{
+                    fs.createReadStream("index.html").pipe(response);
+                }
+              });
+              break;
         case 'connection':
             if(request.method=='GET')
             {
@@ -140,10 +155,96 @@ let server=http.createServer(function(request, response){
             }
             break;
         case 'formparameter':
+            if (request.method == 'POST') 
+            {
+                let result='';
+                request.on('data', (data)=>
+                {
+                    result+=data;
+                });
+                request.on('end', (end)=>
+                {
+                    result+='<br/>';
+                    let o=qs.parse(result);
+                    result='';
+                    for(let key in o)
+                    {
+                        result+=`${key} = ${o[key]}<br/>`;
+                    }
+                    response.writeHead(200, {'Content-type':'text/html; charset=utf-8'});
+                    response.write('<h3>URL-параметры</h3>');
+                    response.end(result);
+                })
+            }
+            else
+            {
+                response.writeHead(405, {'Content-type':'text/plain'});
+                response.end("Invalid http method");
+            }
             break;
         case 'json':
+            if (request.method == 'POST') 
+            {
+                let result='';
+                request.on('data', (data)=>
+                {
+                    result+=data;
+                });
+                request.on('end', (end)=>
+                {
+                    let __comment='';
+                    let x_plus_y;
+                    let concatination_s_o='';
+                    let length_m;
+                    let o=JSON.parse(result);
+                    __comment=`Ответ. ${o.__comment.substr(8)}`;
+                    x_plus_y=o.x+o.y;
+                    length_m=o.m.length;
+                    concatination_s_o=`${o.o.surname} ${o.o.name}`;
+                    response.write(JSON.stringify({
+                        _comment: __comment,
+                        y_plus_x: x_plus_y,
+                        m_length: length_m,
+                        concatination_s_o: concatination_s_o
+                    }));
+                    response.end();
+                });
+            }
+            else
+            {
+                response.writeHead(405, {'Content-type':'text/plain'});
+                response.end("Invalid http method");
+            }
             break;
         case 'xml':
+            if (request.method == 'POST') 
+            {
+                let xmlText='';
+                request.on("data", (data)=>
+                {
+                    xmlText+=data;
+                });
+                request.on("end", ()=>
+                {
+                    parseString(xmlText, function(err, result)
+                    {
+                        if(err)
+                        {
+                            response.writeHead(400, {'Content-type':'text/plain'});
+                            response.end();
+                        }
+                        else
+                        {
+                            
+                        }
+                    })
+                });
+            }
+            else
+            {
+                response.writeHead(405, {'Content-type':'text/plain'});
+                response.end("Invalid http method");
+            }
             break;
         case 'files':
             break;
