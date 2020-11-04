@@ -4,6 +4,21 @@ const url=require("url");
 const qs = require("querystring"); 
 const parseString=require('xml2js').parseString;
 const xmlBuilder=require('xmlbuilder');
+const mp=require('multiparty');
+
+function FileCounter(response)
+{
+    let countFiles=0;
+    fs.readdir("D:\\3_Course\\CrossplatformApplications\\NodeLabs\\Lab8", (err, files) => {
+        countFiles=files.length;
+        ResponceEditer(countFiles, response);
+      });
+}
+function ResponceEditer(fileCount, response)
+{
+    response.end(fileCount.toString());
+}
+
 
 let count = (obj)=>
 {
@@ -34,8 +49,6 @@ let count = (obj)=>
 }
 
 let server=http.createServer(function(request, response){
-    // получаем путь после слеша
-    //const filePath = request.url.substr(1);
     const urlRequest=url.parse(request.url, true);
     switch(urlRequest.pathname.split('/')[1])
     {
@@ -156,13 +169,9 @@ let server=http.createServer(function(request, response){
         case 'req-data':
             if(request.method=='GET')
             {
-                let data = [];
-                    request.on('data', chunk => data.push(chunk));
-                    request.on('end', () =>
-                    {
-                        console.log(data);
-                        response.end();
-                    });
+                request.on('data', chunk => {
+                    console.log(`Chunk : ${chunk}`);
+                  })
             }
             else
             {
@@ -277,8 +286,62 @@ let server=http.createServer(function(request, response){
             }
             break;
         case 'files':
+            if(request.method=='GET')
+            {
+                if(typeof urlRequest.pathname.split('/')[2] == 'undefined')
+                {
+                    FileCounter(response);                  
+                }
+                else
+                {
+                    fs.access(urlRequest.pathname.split('/')[2], err => {
+                        // если произошла ошибка - отправляем статусный код 404
+                        if(err){
+                            response.statusCode = 404;
+                            response.end("Resourse not found!");
+                        }
+                        else{
+                            fs.createReadStream(urlRequest.pathname.split('/')[2]).pipe(response);
+                        }
+                      });
+                }
+            }
+            else
+            {
+                response.writeHead(405, {'Content-type':'text/plain'});
+                response.end("Invalid http method");
+            }
             break;
         case 'upload':
+            if(request.method=='GET')
+            {
+                fs.access("filesupload.html", err => {
+                    // если произошла ошибка - отправляем статусный код 404
+                    if(err){
+                        response.statusCode = 404;
+                        response.end("Resourse not found!");
+                    }
+                    else{
+                        fs.createReadStream("filesupload.html").pipe(response);
+                    }
+                  });
+            }
+            else if(request.method=='POST')
+            {
+                let form=new mp.Form({uploadDir:'D:\\3_Course\\CrossplatformApplications\\NodeLabs\\Lab8'});
+                form.on('file', (name, file) => {
+                });
+                form.on('close', () => {
+                    response.writeHead(200, {'Content-type': 'text/plain'});
+                    response.end("Uploaded!");
+                });
+                form.parse(request);
+            }
+            else
+            {
+                response.writeHead(405, {'Content-type':'text/plain'});
+                response.end("Invalid http method");
+            }
             break;
     }
 }).listen(3000, function(){console.log("Server started on 3000 port")});
