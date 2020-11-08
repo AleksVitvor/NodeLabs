@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Главная</title>
+    <meta charset="utf-8" />
+    <script>
+        for(var i=1;i<=20;i++)
+        {
+            fetch('/fact?k='+i)  
+                .then(  
+                    function(response) {  
+                    if (response.status !== 200) {  
+                        alert('Looks like there was a problem. Status Code: ' +  
+                        response.status);  
+                        return;  
+                    }
+
+                    // Examine the text in the response  
+                    response.json().then(function(data) {  
+                        document.getElementById("name").innerHTML += "Результат: "+data.t+"-"+data.k+"/"+data.fact+'</br>';  
+                    });  
+                    }  
+                )  
+                .catch(function(err) {  
+                    alert('Fetch Error :-S', err);  
+                }); 
+        }      
+    </script>
+</head>
+<body>
+    <h3 id="name"></h3>
+</body>
+<html>

@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <title>Lab 10</title>
+    </head>
+    <body>
+        <h1>Lab 10-01</h1>
+        <button onclick="startWS()">startWS</button>
+        <h2>From server:</h2>
+        <div id="mess"></div>
+        <script>
+            let k = 0;
+            let messageInterval;
+            function startWS(){
+                let socket = new WebSocket('ws:/localhost:4000/ws');
+                socket.onopen =()=>{
+                    console.log('Socket opened');
+                    messageInterval = setInterval(()=>{
+                        socket.send(`10-01-client:${++k}`);
+                    }, 3000);
+                    setTimeout(()=>{
+                        clearInterval(messageInterval);
+                        socket.close();
+                    }, 25000);
+                };
+                socket.onmessage =(e)=>{
+                    let newMessage = document.createElement('div');
+                    newMessage.innerText = e.data;
+                    document.getElementById('mess').appendChild(newMessage);
+                };
+                socket.onclose = () => { console.log('Socket closed');}
+                socket.onerror = function(error){alert('Error '+ error.message);};
+            };
+        </script>
+    </body>
+</html>

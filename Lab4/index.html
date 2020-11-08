@@ -54,10 +54,10 @@ db.innerHTML = result;
 }
 
 let ID3 = document.getElementById("id3");
-async function Delete() {
-const f = await fetch(`http://localhost:3000/api/db?id=${ID3.value}`, {
-method: 'DELETE'
-});
+    async function Delete() {
+    const f = await fetch(`http://localhost:3000/api/db?id=${ID3.value}`, {
+    method: 'DELETE'
+    });
 const result = await f.text();
 alert(`Удалено: ${result}`);
 }
