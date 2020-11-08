@@ -169,9 +169,15 @@ let server=http.createServer(function(request, response){
         case 'req-data':
             if(request.method=='GET')
             {
-                request.on('data', chunk => {
-                    console.log(`Chunk : ${chunk}`);
-                  })
+                request.on('data', (data) =>
+                { 
+                    console.log(urlRequest.query.data);
+                });
+                request.on('end', () =>
+                {
+                    console.log("Последняя порция");
+                    response.end();
+                });
             }
             else
             {
