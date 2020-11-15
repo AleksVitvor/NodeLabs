@@ -1,0 +1,4 @@
+﻿  pch.cpp
+  ServerT.cpp
+d:\учеба\3 курс\пскп(смелов)\лабы\lab13\лаба2\servert\servert\servert.cpp(141): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
+  ServerT.vcxproj -> D:\Учеба\3 курс\ПСКП(Смелов)\Лабы\lab13\лаба2\ServerT\x64\Debug\ServerT.exe

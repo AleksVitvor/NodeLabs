@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>Lab14</title>
+    </head>
+    <body>
+        <button onclick="getPulpits()">SELECT</button><br/>
+        <div id="all_pulpits"></div><br/>
+        
+        <form>
+            <h3>INSERT</h3>
+            <div>
+                <input id="id" type="text" placeholder="Code"><br/>
+                <input id="name" type="text" placeholder="FullName"><br/>
+                <input id="faculty" type="text" placeholder="FacultyCode"><br/>
+            </div>
+            <button onclick="insert()">Submit</button>
+        </form><br/><br/>
+
+        <form>
+            <h3>DELETE</h3>
+            <input id="del_id" type="text" placeholder="Code">
+            <button onclick="remove()">Delete</button>
+        </form><br/><br/>
+
+        <form>
+            <h3>UPDATE</h3>
+            <div>
+                <input id="upd_id" type="text" placeholder="Code"><br/>
+                <input id="upd_name" type="text" placeholder="FullName"><br/>
+                <input id="upd_faculty" type="text" placeholder="FacultyCode"><br/>
+            </div>
+            <button onclick="update()">Update</button>
+        </form><br/><br/>
+
+        <script>
+            function getPulpits() {
+                fetch('http://localhost:3000/api/pulpits')
+                .then(response => response.json())
+                .then(response => {
+                    let container = document.getElementById('all_pulpits');
+                    container.innerHTML = '';
+                    response.forEach(pulpit => {
+                        let pulpitContainer = document.createElement('div');
+                        pulpitContainer.innerHTML = `<span>${pulpit.PULPIT} - ${pulpit.PULPIT_NAME} - ${pulpit.FACULTY}</span>`;
+                        container.append(pulpitContainer, document.createElement('br'));
+                    });
+                });
+            }
+
+            function insert() {
+                let code = document.getElementById('id').value;
+                let name = document.getElementById('name').value;
+                let faculty = document.getElementById('faculty').value;
+                fetch('http://localhost:3000/api/pulpits', {
+                    method: 'POST', headers:{ 'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        PULPIT: code ? code : undefined,
+                        PULPIT_NAME: name,
+                        FACULTY: faculty
+                    })
+                })
+                .then(response => response.json())
+                .then(response => getPulpits());
+            }
+
+            function update() {                
+                let code = document.getElementById('upd_id').value;
+                let name = document.getElementById('upd_name').value;
+                let faculty = document.getElementById('upd_faculty').value;
+                fetch('http://localhost:3000/api/pulpits', {
+                    method: 'PUT', headers: { 'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        PULPIT: code ? code : undefined,
+                        PULPIT_NAME: name,
+                        FACULTY: faculty
+                    })
+                })
+                .then(response => response.json())
+                .then(response => getPulpits());
+            }
+
+            function remove() {
+                let code = document.getElementById('del_id').value;
+                fetch(`http://localhost:3000/api/pulpits/${code}`, {
+                    method: 'DELETE',  headers:{ 'Content-Type': 'application/json'}})
+                .then(response => getPulpits());
+            }
+        </script>
+    </body>
+</html>
