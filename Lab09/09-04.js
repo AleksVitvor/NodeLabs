@@ -6,7 +6,7 @@ let params =  JSON.stringify({
     y: 2,
     s: "message",
     m: ["a", "b"],
-    o: {surname: "Metla", name:"Polina"}
+    o: {surname: "Vitvor", name:"Aleks"}
 });
 
 let options = {

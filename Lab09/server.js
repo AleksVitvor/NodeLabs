@@ -67,6 +67,7 @@ let server = http.createServer((request, response)=>{
         });
     } 
     else if (parsedUrl.pathname === '/sixth_seventh') {
+        let flag=false;
         let result='';
 		let form =new mp.Form({uploadDir:'./'});
 		form.on('field',(name,value)=>{
@@ -83,14 +84,17 @@ let server = http.createServer((request, response)=>{
 			console.log('------err--------------');
 			console.log('err =',err);
 			response.writeHead(200, {'Content-Type':'text/html;charset=utf-8'});
-			response.write('<h1>Form/error</h1>');
-			response.end()
+			response.end('<h1>Form/error</h1>')
 		});
 		form.on('close',()=>{
-			console.log('-----------close----------');
-			response.writeHead(200, {'Content-Type':'text/html;charset=utf-8'});
-			response.write('<h1>Form</h1>');
-			response.end(result);
+            if(!flag)
+            {
+                console.log('-----------close----------');
+                response.writeHead(200, {'Content-Type':'text/html;charset=utf-8'});
+                response.write('<h1>Form</h1>');
+                response.end(result);
+                flag=true;
+            }
 		})
         form.parse(request);
     } 
